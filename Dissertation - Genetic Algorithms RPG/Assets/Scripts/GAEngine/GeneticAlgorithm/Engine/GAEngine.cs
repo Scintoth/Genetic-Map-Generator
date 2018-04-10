@@ -244,6 +244,10 @@ public class GAEngine : MonoBehaviour, IGeneticAlgorithmEngine
 
             CheckDone();
 
+            if(AppliedObject == null)
+            {
+                AppliedObject = bests[0];
+            }
             AppliedObject.AssignData(bests[0].GeneData);
 
             /*if (AppliedObject.tag == "Map")
@@ -325,7 +329,10 @@ public class GAEngine : MonoBehaviour, IGeneticAlgorithmEngine
             ClearPopulation();
 
             CheckDone();
-
+            if (AppliedObject == null)
+            {
+                AppliedObject = bests[0];
+            }
             AppliedObject.AssignData(bests[0].GeneData);
 
             /*if (AppliedObject.tag == "Map")

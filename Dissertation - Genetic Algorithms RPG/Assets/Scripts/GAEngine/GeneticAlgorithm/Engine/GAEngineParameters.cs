@@ -17,6 +17,7 @@ namespace Assets.Scripts.GAEngine.GeneticAlgorithm
         public MethodOfSelection SelectionMethod;
         public float MutationRate;
         public DiContainer Container;
+        public string NameOfObject;
     }
 
     public enum MethodOfSelection { TwoFittest, FittestAndRandom, BestAndWorst, Stochastic}

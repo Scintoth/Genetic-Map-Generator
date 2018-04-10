@@ -3,6 +3,7 @@ using Assets.DependencyInjection;
 using Assets.Scripts.GAEngine.GeneticAlgorithm;
 using Assets.Scripts.GAEngine.GeneticAlgorithm.Chromosome;
 using Assets.Scripts.GAEngine.GeneticAlgorithm.Engine;
+using Assets.Scripts.GAEngine.GeneticAlgorithm.Selection;
 using Assets.Scripts.StateMachine;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,6 +13,8 @@ using Zenject;
 public class GAStateMachine : MonoBehaviour
 {
     public static GAStateMachine GASM;
+
+    public ZenjectContainer _container;
 
     [Inject]
     IStateMachine SM;
@@ -51,6 +54,24 @@ public class GAStateMachine : MonoBehaviour
 
     void Start()
     {
+        MapEngine = _container.GetContainer().InstantiateComponentOnNewGameObject<GAEngine>("MapEngine");
+        InitialiseMapGA();
+        /*var testBaseMap = _container.GetContainer().InstantiateComponentOnNewGameObject<Map>("Test Map");
+        testBaseMap.Initialise("Map");
+        var testParameters = new GAEngineParameters
+        {
+            Container = _container.GetContainer(),
+            FitnessThreshold = 0.9f,
+            InitialChromosome = testBaseMap,
+            MutationRate = 0.01f,
+            UseElitism = false,
+            MaxPopulation = 20,
+            SelectionMethod = MethodOfSelection.FittestAndRandom
+        };
+        MapEngine.SetParameters(testParameters, new MapFitnessCalculator()); // TODO: Implement this from the UI*/
+        SettlementEngine = _container.GetContainer().InstantiateComponentOnNewGameObject<GAEngine>("SettlementEngine");
+        //SettlementEngine.SetParameters(); // TODO: Implement this from the UI
+        EnginesInitialisedCondition.A = IsMapGenInitialised;
         MapCompleted.Initialise("Map has been made", CreateSettlement, new List<Action> { }, MapCompleteCondtion);
         CreateMap.SetActions(new List<Action> { }, new List<Action> { InitialiseMapGA, MapEngine.GAUpdate }, new List<Action> { GetFinalMap });
         CreateMap.transitions = new List<Transition> { MapCompleted };
@@ -59,6 +80,7 @@ public class GAStateMachine : MonoBehaviour
         CreateSettlement.SetActions(new List<Action> { }, new List<Action> { InitialiseSettlementGA, SettlementEngine.GAUpdate }, new List<Action> { GetFinalSettle });
         ViewMap.SetActions(new List<Action> { }, new List<Action> { CC.CameraControllerUpdate }, new List<Action> { });
         SM.Initialise(CreateMap, false, new List<State> { CreateMap, CreateSettlement, ViewMap });
+        CheckConditions();
     }
 	
 	// Update is called once per frame
@@ -68,7 +90,6 @@ public class GAStateMachine : MonoBehaviour
         {
             action();
         }
-        CheckConditions();
 	}
 
     void CheckConditions()
@@ -84,6 +105,7 @@ public class GAStateMachine : MonoBehaviour
         if (!mapGenInitialised)
         {
             var baseMap = ChromosomeFactory.CF.GetGameObjectForName("Map");
+            baseMap.GetComponent<IChromosome>().Name = "Map";
             var container = SceneContext.Container;
             var mapEngineParameters = new GAEngineParameters
             {
@@ -143,5 +165,10 @@ public class GAStateMachine : MonoBehaviour
     {
         finalSettlement = SettlementEngine.GetGameObject().GetComponent<Settlement>();
         finalSettlement.GetComponent<Settlement>().FindFloor();
+    }
+
+    bool IsMapGenInitialised()
+    {
+        return mapGenInitialised;
     }
 }

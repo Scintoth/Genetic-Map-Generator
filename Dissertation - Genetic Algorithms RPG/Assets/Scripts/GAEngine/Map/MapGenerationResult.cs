@@ -10,12 +10,12 @@ namespace Assets.Scripts.GAEngine.Map
 {
     public class MapGenerationResult
     {
-        public List<PointData> DataPoints { get; set; }
+        public List<PointData> DataPoints { get; set; } = new List<PointData>();
         public int VertexCount { get; set;}
-        public List<int> Tris { get; set; }
+        public List<int> Tris { get; set; } = new List<int>();
         public float HighestVertex { get; set; }
         public float SumOfAllVertexHeights { get; set; }
-        public List<Vector3[]> Verts { get; set; }
+        public List<Vector3[]> Verts { get; set; } = new List<Vector3[]>();
         public float WaterHeight { get; set; }
         public float MountainHeight { get; set; }
     }

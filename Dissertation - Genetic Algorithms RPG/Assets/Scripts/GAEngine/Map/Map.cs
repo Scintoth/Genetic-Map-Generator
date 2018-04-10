@@ -16,17 +16,9 @@ public class Map : MonoBehaviour, IChromosome
     [Header("Used to add additional hills to the tops of mesas")]
     public bool AdditionalHills = true;
 
-    public List<GeneticData> GeneData
-    {
-        get;
-        set;
-    }
+    public List<GeneticData> GeneData { get; set; } = new List<GeneticData>();
 
-    public List<int> Genes
-    {
-        get;
-        set;
-    }
+    public List<int> Genes { get; set; } = new List<int>();
 
     public int TotalVertices = 0;
     
@@ -158,10 +150,12 @@ public class Map : MonoBehaviour, IChromosome
         gameObject.AddComponent<MeshFilter>();
         gameObject.AddComponent<MeshCollider>();
         GetComponent<MeshRenderer>().material = Resources.Load<Material>("Terrain");
-        GetComponent<Map>().ret = new Mesh();
-        GetComponent<Map>().ret.MarkDynamic();
-        GetComponent<Map>().settleMesh = new Mesh();
-        GetComponent<Map>().settleMesh.MarkDynamic();
+        var mesh = GetComponent<Map>();
+        mesh.ret = new Mesh();
+        mesh.ret.MarkDynamic();
+        mesh.ret.name = "mapMesh";
+        mesh.settleMesh = new Mesh();
+        mesh.settleMesh.MarkDynamic();
         GetComponent<MeshFilter>().mesh = ret;
         GeneData = new List<GeneticData>();
         GenerateGene(10);
@@ -179,8 +173,13 @@ public class Map : MonoBehaviour, IChromosome
         UnderwaterVertices = 0;
         GrasslandVertices = 0;
         ceiling = MaxHeight * 5;
-        GetComponent<MeshFilter>().mesh.Clear();
+        if(GetComponent<MeshFilter>() != null)
+            GetComponent<MeshFilter>()?.mesh.Clear();
+        if (ret == null)
+            ret = new Mesh();
         ret.Clear();
+        if (settleMesh == null)
+            settleMesh = new Mesh();
         settleMesh.Clear();
 
         // Generate everything.
@@ -202,6 +201,23 @@ public class Map : MonoBehaviour, IChromosome
             ZFrequency = zFreq            
         };
         var heightMap = _heightmapGenerator.GenerateHeightMap(mapGenParameters);
+        /*var unwoundVertices = new List<Vector3>(); //new Vector3[Width * Width];
+        //int l = 0;
+        foreach (Vector3[] v in heightMap.Verts)
+        {
+            unwoundVertices.AddRange(v);
+            //v.CopyTo(unwoundVertices., l * Width);
+            //l++;
+        }
+        ret.SetVertices(unwoundVertices);*/
+        //ret.SetTriangles(heightMap.Tris.ToArray(), 0);
+        verts = heightMap.Verts;
+        ret.triangles = heightMap.Tris.ToArray();
+        tris = heightMap.Tris;
+        waterHeight = heightMap.WaterHeight;
+        highestVertex = heightMap.HighestVertex;
+        mountainHeight = heightMap.MountainHeight;
+        totalVertexHeights = heightMap.VertexCount;
         //GenerateHeightMap();
 
         // This is where we go over an additional loop of the whole array to calculate peaks and shears
@@ -246,6 +262,12 @@ public class Map : MonoBehaviour, IChromosome
         ret.RecalculateBounds();
         ret.RecalculateNormals();
 
+        if(transform.childCount == 0)
+        TerrainMesh = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        TerrainMesh.GetComponent<MeshFilter>().mesh = ret;
+        TerrainMesh.transform.parent = transform;
+        //TerrainMesh.GetComponent<MeshRenderer>().material = TerrainMaterials[0];
+
         // Clear no longer needed data
 
         settlementTriCount = 0;
@@ -254,9 +276,12 @@ public class Map : MonoBehaviour, IChromosome
         settlementTriangles.Clear();
         settlementTriangles = null;
         //ret.Clear();
-        for (int j = 0; j < Width; ++j)
+        if (verts.Count > 0)
         {
-            verts[j] = null;
+            for (int j = 0; j < Width; ++j)
+            {
+                verts[j] = null;
+            }
         }
         verts.Clear();
         for(int j = 0; j < settleViableArea.Count; ++j)
@@ -870,7 +895,9 @@ public class Map : MonoBehaviour, IChromosome
         verts.Clear();
         tris.Clear();
         uvs.Clear();
-        ret.Clear();
+        if(ret != null)
+            if(ret.name != "null")
+                ret.Clear();
     }
 
     public GameObject GetGameObject()
