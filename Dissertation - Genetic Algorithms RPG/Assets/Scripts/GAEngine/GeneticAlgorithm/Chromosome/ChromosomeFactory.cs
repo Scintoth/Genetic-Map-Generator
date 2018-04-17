@@ -34,6 +34,8 @@ namespace Assets.Scripts.GAEngine.GeneticAlgorithm.Chromosome
         }
     }
 
+    
+
     [Serializable]
     public class ChromosomeData
     {

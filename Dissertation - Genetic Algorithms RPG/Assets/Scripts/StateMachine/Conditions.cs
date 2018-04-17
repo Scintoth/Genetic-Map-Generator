@@ -189,11 +189,7 @@ public class ListNotNullCond<T> : ICondition
             }
             return trigger;
         }
-        else
-        {
-            return false;
-        }
-        return trigger;
+        return false;
     }
 
     public bool ForceBool(bool Boolean)

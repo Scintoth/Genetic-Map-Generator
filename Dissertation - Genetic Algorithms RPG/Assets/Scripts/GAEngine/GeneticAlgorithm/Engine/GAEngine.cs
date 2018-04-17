@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using Assets.Scripts.GAEngine.GeneticAlgorithm;
 using Zenject;
@@ -7,6 +8,7 @@ using Assets.DependencyInjection;
 using Assets.Scripts.GAEngine.GeneticAlgorithm.Selection;
 using Assets.Scripts.GAEngine.GeneticAlgorithm.Engine;
 using Assets.Scripts.GAEngine.GeneticAlgorithm.Chromosome;
+using System.Threading.Tasks;
 
 public delegate List<IChromosome> SelectionMethod();
 
@@ -112,6 +114,9 @@ public class GAEngine : MonoBehaviour, IGeneticAlgorithmEngine
             var chromosomeFitnessValues = Population[i].GetFitnessVariables();
             var chromosomeExpectedFitnessValues = Population[i].GetExpectedFitnesses();
 
+            Debug.Log(chromosomeFitnessValues.ToString());
+            Debug.Log(chromosomeExpectedFitnessValues.ToString());
+
             Population[i].Fitness = _fitnessCalculator.CalculateFitness(chromosomeFitnessValues, chromosomeExpectedFitnessValues);
 
             if (Population[i].Fitness >= fitComparison)
@@ -148,22 +153,43 @@ public class GAEngine : MonoBehaviour, IGeneticAlgorithmEngine
             //Destroy(Population[i]);
         }
         Population.Clear();
+        var populationLock = new object();
         if (createdOffspring == null)
         {
-            for (int i = 0; i < MaxPopulation; ++i)
+            //StartCoroutine("CreateNewGenes");
+            Parallel.For(0, MaxPopulation - 1, (i) =>
+            //for (int i = 0; i < MaxPopulation; ++i)
             {
-                var temp = ChromosomeFactory.CF.GetGameObjectForName(Initial.Name);
-                created.Add(temp);
-                Population.Add(Initial.GenerateGene(10));
-            }
+                var temp = Initial.GenerateGene(20); /*ChromosomeFactory.CF.GetGameObjectForName(Initial.Name);*/
+                lock (populationLock)
+                {
+                    created.Add(temp.GetGameObject());
+                    Population.Add(Initial.GenerateGene(10));
+                }
+            });
         }
         else
         {
-            for (int i = 0; i < MaxPopulation; ++i)
+            Parallel.For(0, MaxPopulation, (i) =>
+            //for (int i = 0; i < MaxPopulation; ++i)
             {
-                Population.AddRange(createdOffspring);
-                Population[i].Mutate(mutationRate);
-            }
+                lock (populationLock)
+                {
+                    Population.AddRange(createdOffspring);
+                    Population[i].Mutate(mutationRate);
+                }
+            });
+        }
+    }
+
+    IEnumerable CreateNewGenes()
+    {
+        for (int i = 0; i < MaxPopulation; ++i)
+        {
+            var temp = Initial.GenerateGene(20); /*ChromosomeFactory.CF.GetGameObjectForName(Initial.Name)*/;
+                created.Add(temp.GetGameObject());
+                Population.Add(Initial.GenerateGene(10));
+            yield return null;
         }
     }
 
@@ -250,17 +276,6 @@ public class GAEngine : MonoBehaviour, IGeneticAlgorithmEngine
             }
             AppliedObject.AssignData(bests[0].GeneData);
 
-            /*if (AppliedObject.tag == "Map")
-            {
-                AppliedObject.AssignData(bests[0].GeneData);
-                AppliedObject.GetComponent<Map>().SetWater();
-                AppliedObject.gameObject.name = "Map";
-            }
-            if (AppliedObject.tag == "Settlement")
-            {
-                AppliedObject.GetComponent<Settlement>().AssignData(bests[0].GeneData);
-                AppliedObject.gameObject.name = "Settlement";
-            }*/
             Generation++;
         }
     }

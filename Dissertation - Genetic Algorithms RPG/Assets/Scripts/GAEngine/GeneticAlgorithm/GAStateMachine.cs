@@ -55,7 +55,7 @@ public class GAStateMachine : MonoBehaviour
     void Start()
     {
         MapEngine = _container.GetContainer().InstantiateComponentOnNewGameObject<GAEngine>("MapEngine");
-        InitialiseMapGA();
+        //InitialiseMapGA();
         /*var testBaseMap = _container.GetContainer().InstantiateComponentOnNewGameObject<Map>("Test Map");
         testBaseMap.Initialise("Map");
         var testParameters = new GAEngineParameters
@@ -98,8 +98,6 @@ public class GAStateMachine : MonoBehaviour
         SettlementCompleteCondition.A = SettlementEngine.StopGenerator;
     }
 
-
-
     void InitialiseMapGA()
     {
         if (!mapGenInitialised)
@@ -119,14 +117,6 @@ public class GAStateMachine : MonoBehaviour
             };
             MapEngine.Reset();
             MapEngine.SetParameters(mapEngineParameters, new MapFitnessCalculator());
-            /*MapEngine.stopGenerator = false;
-            MapEngine.Population.Clear();
-            MapEngine.bests.Clear();
-            MapEngine.worst = null;
-            MapEngine.AppliedObject = container.InstantiatePrefab(baseMap).GetComponent<IChromosome>(); // new GameObject();
-            MapEngine.AppliedObject.Initialise("Map");
-            MapEngine.createdChromosome = null;
-            MapEngine.Initial = MapEngine.AppliedObject;*/
             mapGenInitialised = true;
         }
     }

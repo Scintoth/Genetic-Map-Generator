@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Assets.Entities;
 using UnityEngine;
 
@@ -17,21 +13,26 @@ namespace Assets.Scripts.GAEngine.Map
             _heightCalculator = heightCalculator;
         }
 
+        private object TriLock = new object();
+
         public MapGenerationResult GenerateHeightMap(MapGenerationParameters parameters)
         {
             var result = new MapGenerationResult();
-            List<Vector3[]> verts = new List<Vector3[]>();
+            //List<Vector3[]> verts = new List<Vector3[]>();
+            Vector3[,] verts = new Vector3[parameters.Width, parameters.Width];
             var ceiling = parameters.MaximumHeight * 5;
             
             float waterHeight = 0.0f;
             float mountainHeight = 0.0f;
 
             float zOff = 0;
-            for (int z = 0; z < parameters.Width; z++)
+            //for (int z = 0; z < parameters.Width; z++)
+            Parallel.For(0, parameters.Width - 1, (z) =>
             {
                 float xOff = 0;
-                verts.Add(new Vector3[parameters.Width]);
-                for (int x = 0; x < parameters.Width; x++)
+                //verts.Add(new Vector3[parameters.Width]);
+                //for (int x = 0; x < parameters.Width; x++)
+                Parallel.For(0, parameters.Width - 1, (x) =>
                 {
 
                     Vector3 currentPoint = new Vector3
@@ -72,7 +73,7 @@ namespace Assets.Scripts.GAEngine.Map
 
                     result.SumOfAllVertexHeights += currentPoint.y;
 
-                    verts[z][x] = currentPoint;
+                    verts[z, x] = currentPoint;
 
                     if (currentPoint.y >= result.HighestVertex)
                     {
@@ -87,25 +88,28 @@ namespace Assets.Scripts.GAEngine.Map
                     int current_x = x;
                     if (current_x - 1 <= 0 || z <= 0 || current_x >= parameters.Width)
                     {
-                        continue;
+                        return;
                     }
 
-                    result.Tris.Add(x + z * parameters.Width);
-                    result.Tris.Add(current_x + (z - 1) * parameters.Width);
-                    result.Tris.Add((current_x - 1) + (z - 1) * parameters.Width);
-
-                    if (x - 1 <= 0 || z <= 0)
+                    lock (TriLock)
                     {
-                        continue;
+                        result.Tris.Add(x + z * parameters.Width);
+                        result.Tris.Add(current_x + (z - 1) * parameters.Width);
+                        result.Tris.Add((current_x - 1) + (z - 1) * parameters.Width);
+
+                        if (x - 1 <= 0 || z <= 0)
+                        {
+                            return;
+                        }
+                        result.Tris.Add(x + z * parameters.Width);
+                        result.Tris.Add((current_x - 1) + (z - 1) * parameters.Width);
+                        result.Tris.Add((x - 1) + z * parameters.Width);
                     }
-                    result.Tris.Add(x + z * parameters.Width);
-                    result.Tris.Add((current_x - 1) + (z - 1) * parameters.Width);
-                    result.Tris.Add((x - 1) + z * parameters.Width);
                     xOff += x / parameters.Width - 0.5f;
                     result.VertexCount++;
-                }
+                });
                 zOff += z / parameters.Width - 0.5f;
-            }
+            });
             result.Verts = verts;
             return result;
         }

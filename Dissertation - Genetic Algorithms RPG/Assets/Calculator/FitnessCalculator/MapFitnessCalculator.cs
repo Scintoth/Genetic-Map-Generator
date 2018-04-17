@@ -38,8 +38,8 @@ namespace Assets.Calculator
 
             for(int i = 0; i < values.Count; i++)
             {
-                var mathableValue = (decimal)values[i] / (decimal)expectedValues[i];
-                mathableValue = (decimal)Math.Tanh(Math.Pow(0.3 / (double)Math.Abs(mathableValue - 1), 1.57));
+                var mathableValue = (double)values[i] / (double)expectedValues[i];
+                mathableValue = 1 + Math.Exp(-3 * Math.Pow(mathableValue, 2)); /*(decimal)Math.Tanh(Math.Pow(0.3 / (double)Math.Abs(mathableValue - 1), 1.57))*/;
                 fitnesses.Add((float)mathableValue);
             }
 

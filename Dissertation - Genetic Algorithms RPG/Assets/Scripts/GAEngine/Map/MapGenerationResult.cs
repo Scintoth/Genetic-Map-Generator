@@ -15,7 +15,7 @@ namespace Assets.Scripts.GAEngine.Map
         public List<int> Tris { get; set; } = new List<int>();
         public float HighestVertex { get; set; }
         public float SumOfAllVertexHeights { get; set; }
-        public List<Vector3[]> Verts { get; set; } = new List<Vector3[]>();
+        public Vector3[,] Verts { get; set; }
         public float WaterHeight { get; set; }
         public float MountainHeight { get; set; }
     }
