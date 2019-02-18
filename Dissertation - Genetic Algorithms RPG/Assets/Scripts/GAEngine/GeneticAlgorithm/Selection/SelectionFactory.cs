@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Assets.Scripts.Utilities;
 
 namespace Assets.Scripts.GAEngine.GeneticAlgorithm.Selection
 {
-    public class SelectionFactory
+    public static class SelectionFactory
     {
-        public ISelectionMethod Create(MethodOfSelection methodOfSelection)
+        public static ISelectionMethod Create(MethodOfSelection methodOfSelection)
         {
+
             switch (methodOfSelection)
             {
                 case MethodOfSelection.TwoFittest:

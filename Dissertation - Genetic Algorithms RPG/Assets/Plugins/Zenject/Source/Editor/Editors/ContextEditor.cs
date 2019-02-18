@@ -1,5 +1,8 @@
+#if !ODIN_INSPECTOR
+
 namespace Zenject
 {
+    [NoReflectionBaking]
     public class ContextEditor : UnityInspectorListEditor
     {
         protected override string[] PropertyNames
@@ -43,5 +46,4 @@ namespace Zenject
     }
 }
 
-
-
+#endif

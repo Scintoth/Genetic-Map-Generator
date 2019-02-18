@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using GeneticAlgorithmEngine;
 using UnityEditor;
 
 
@@ -9,7 +10,7 @@ public interface IChromosome
     string Name { get; set; }
     List<GeneticData> GeneData { get; set; }
     float Fitness { get; set; }
-    List<int> Genes { get; set; }
+    List<RandomInt> Genes { get; set; }
 
     void AssignData(List<GeneticData> geneticData);
     IChromosome GenerateGene(int length);

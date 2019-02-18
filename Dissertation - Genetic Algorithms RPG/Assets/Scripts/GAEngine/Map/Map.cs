@@ -7,10 +7,18 @@ using Zenject;
 using Assets.Entities;
 using System;
 using System.Threading.Tasks;
+using Assets.Scripts.GAEngine.GeneticAlgorithm.Engine;
+using GeneticAlgorithmEngine;
 
-public class Map : MonoBehaviour, IChromosome
+public class Map : MonoBehaviour
 {
-    [Inject]
+    public List<Material> TerrainMaterials;
+    public Mesh ret;
+
+
+
+
+    /*[Inject]
     public IHeightMapGenerator _heightmapGenerator;
     
     [Header("Can be used to create lakes/mesas")]
@@ -19,8 +27,9 @@ public class Map : MonoBehaviour, IChromosome
     public bool AdditionalHills = true;
 
     public List<GeneticData> GeneData { get; set; } = new List<GeneticData>();
+    public ExpressedMapData ExpressedData { get; set; } 
 
-    public List<int> Genes { get; set; } = new List<int>();
+    public List<RandomInt> Genes { get; set; } = new List<RandomInt>();
 
     public int TotalVertices = 0;
     
@@ -41,11 +50,7 @@ public class Map : MonoBehaviour, IChromosome
     public int numberOfPeaks;
 
     
-    public float Fitness
-    {
-        get;
-        set;
-    }
+    public float Fitness { get; set; }
 
     public string Name { get; set; }
 
@@ -77,13 +82,13 @@ public class Map : MonoBehaviour, IChromosome
     float ceiling = 0;
     float totalVertexHeights;
 
-    Vector3[,] verts { get; set; }
     //public List<List<Vector3>> settleViableArea = new List<List<Vector3>>();
     public Vector3[,] settleViableArea;
     List<int> settlementTris = new List<int>();
     List<Triangle> settlementTriangles = new List<Triangle>();
     public Mesh settleMesh;
     List<Vector2> potentialPeaks = new List<Vector2>();
+    Vector3[,] verts { get; set; }
     List<int> tris = new List<int>();
     Vector2[] uvs;
     Vector2[] uv2s;
@@ -92,10 +97,10 @@ public class Map : MonoBehaviour, IChromosome
   /*List<Vector2> uvs = new List<Vector2>();
     List<Vector2> uv2s = new List<Vector2>();
     List<Vector2> uv3s = new List<Vector2>();
-    List<Vector2> uv4s = new List<Vector2>();*/
+    List<Vector2> uv4s = new List<Vector2>();#1#
 
     int settlementTriCount = 0;
-    Vector3[] unfoldedVerts;
+    Vector3[] unfoldedVerts;*/
 
     private MeshFilter MeshFilter;
 
@@ -103,13 +108,14 @@ public class Map : MonoBehaviour, IChromosome
 
     public void Awake()
     {
-        MeshFilter = GetComponent<MeshFilter>();
+        /*MeshFilter = GetComponent<MeshFilter>();*/
     }
 
 
     public IChromosome GenerateGene(int length)
     {
-        var random = new System.Random();
+        throw new Exception();
+        /*var random = new System.Random();
         Water = MapParameters.MP.Water;
         lock (mapLock)
             GeneData.Clear();
@@ -119,12 +125,12 @@ public class Map : MonoBehaviour, IChromosome
         AdditionalHills = true;
         lock (mapLock)
             GeneData.Add(new GeneticData(AdditionalHills));
-        Genes = new List<int>();
+        Genes = new List<RandomInt>();
         lock (mapLock)
             GeneData.Add(new GeneticData());
         for (int i = 0; i < length; ++i)
         {
-            Genes.Add(random.Next(-8000, 8000));//UnityEngine.Random.Range(10, 80));
+            Genes.Add(new RandomInt(-8000, 8000));//.Next(-8000, 8000));//UnityEngine.Random.Range(10, 80));
             GeneData[2].DataSet.Add(Genes[i]);
         };
         MaxHeight = Math.Max((float)random.NextDouble() * 40, 15); //UnityEngine.Random.Range(15f, 40f);
@@ -163,19 +169,19 @@ public class Map : MonoBehaviour, IChromosome
         }
 
         GenerateMesh();
-        return this;
+        return this;*/
     }
 
     public void AssignData(List<GeneticData> dataToAdd)
     {
-        Water = MapParameters.MP.Water;
+        /*Water = MapParameters.MP.Water;
         FlattenTerrain = (bool)dataToAdd[0].DataSet[0];
         AdditionalHills = (bool)dataToAdd[1].DataSet[0];
         Genes.Clear();
         
         for (int i = 0; i < dataToAdd[2].DataSet.Count; ++i)
         {
-            Genes.Add((int)dataToAdd[2].DataSet[i]);
+            Genes.Add((RandomInt)dataToAdd[2].DataSet[i]);
         }
         MaxHeight = (float)dataToAdd[3].DataSet[0];
         waterLevel = (float)dataToAdd[4].DataSet[0];
@@ -185,12 +191,12 @@ public class Map : MonoBehaviour, IChromosome
         exponent = (float)dataToAdd[8].DataSet[0];
         mountainLevel = (float)dataToAdd[9].DataSet[0];
         GenerateMesh();
-        SetWater();
+        SetWater();*/
     }
     
     public void Initialise()
     {
-        Water = MapParameters.MP.Water;
+        /*Water = MapParameters.MP.Water;
         gameObject.AddComponent<MeshFilter>();
         gameObject.AddComponent<MeshCollider>();
         GetComponent<MeshRenderer>().material = Resources.Load<Material>("Terrain");
@@ -204,12 +210,12 @@ public class Map : MonoBehaviour, IChromosome
         GeneData = new List<GeneticData>();
         GenerateGene(10);
         gameObject.name = "Map";
-        gameObject.tag = "Map";
+        gameObject.tag = "Map";*/
     }
 
     public void GenerateMesh()
     {
-        numberOfPeaks = 0;
+        /*numberOfPeaks = 0;
         Water = MapParameters.MP.Water;
         totalVertexHeights = 0;
         TotalVertices = 0;
@@ -230,7 +236,7 @@ public class Map : MonoBehaviour, IChromosome
             Array.Clear(MeshFilter?.mesh.tangents, 0, MeshFilter.mesh.tangents.Length);
             Array.Clear(MeshFilter?.mesh.normals, 0, MeshFilter.mesh.normals.Length);
 
-        }*/
+        }#1#
            // MeshFilter?.mesh.Clear();
         if (ret == null)
             ret = new Mesh();
@@ -279,7 +285,7 @@ public class Map : MonoBehaviour, IChromosome
         {
             for(var j = 0; j < Width; j++)
             {
-                unfoldedVerts[(i * Width) + j] = heightMap.Verts[i, j];
+                unfoldedVerts[(i * Width) + j] = heightMap.Verts[(i * Width) + j].Location;
             }
         }
 
@@ -331,25 +337,25 @@ public class Map : MonoBehaviour, IChromosome
         Array.Clear(uv2s, 0, Width * Width);
         Array.Clear(uv3s, 0, Width * Width);
         Array.Clear(uv4s, 0, Width * Width);
-        WaterController.SetHeight(waterHeight);
+        WaterController.SetHeight(waterHeight);*/
     }
 
     void CalculatePeaksAndSettlements(MapGenerationResult result)
     {
-        settlementTriCount = 0;
+        /*settlementTriCount = 0;
         settlementTriangles = new List<Triangle>();
 
         var settlementViableAreaLock = new object();
         var potentialPeaksLock = new object();
         var settlementTrisLock = new object();
-        Parallel.For(0, Width, (i) =>
+        Parallel.For(0, Width, i =>
         {
-            Parallel.For(0, Width, (j) =>
+            Parallel.For(0, Width, j =>
             {
                 lock (settlementViableAreaLock)
                 {
                     //Mountainous
-                    if (result.Verts[i, j].y > (mountainHeight))
+                    if (result.Verts[(i * Width) + j].Location.y > (mountainHeight))
                     {
                         uvs[(i * Width) + j] = new Vector2(0.5f, 1.0f);
                         uv2s[(i * Width) + j] = new Vector2(1.0f, 1.0f);
@@ -358,7 +364,7 @@ public class Map : MonoBehaviour, IChromosome
                         MountainousVertices++;
                     }
                     //Underwater
-                    else if (result.Verts[i, j].y < waterHeight)
+                    else if (result.Verts[(i * Width) + j].Location.y < waterHeight)
                     {
                         UnderwaterVertices++;
 
@@ -368,7 +374,7 @@ public class Map : MonoBehaviour, IChromosome
                         uv4s[(i * Width) + j] = new Vector2(0.25f, 0.25f);
                     }
                     //Grassland
-                    else if (result.Verts[i, j].y >= waterHeight && result.Verts[i, j].y <= mountainHeight)
+                    else if (result.Verts[(i * Width) + j].Location.y >= waterHeight && result.Verts[(i * Width) + j].Location.y <= mountainHeight)
                     {
                         GrasslandVertices++;
                         uvs[(i * Width) + j] = new Vector2(0.0f, 1.0f);
@@ -380,14 +386,14 @@ public class Map : MonoBehaviour, IChromosome
 
                 lock (settlementViableAreaLock)
                 {
-                    if (result.Verts[i, j].y >= mountainHeight)
+                    if (result.Verts[(i * Width) + j].Location.y >= mountainHeight)
                     {
                         potentialPeaks.Add(new Vector2(i, j));
                     }
                 }
                 lock (settlementViableAreaLock)
                 {
-                    if ((result.Verts[i, j].y < mountainHeight) && (result.Verts[i, j].y > waterHeight))
+                    if ((result.Verts[(i * Width) + j].Location.y < mountainHeight) && (result.Verts[(i * Width) + j].Location.y > waterHeight))
                     {
                         if ((i + 1 < Width) && (i - 1 > 0) && (j + 1 < Width) && (j - 1 > 0))
                         {
@@ -397,9 +403,9 @@ public class Map : MonoBehaviour, IChromosome
                                 {
                                     return;
                                 }
-                                Triangle tempTri = new Triangle(new PointIndex(result.Verts[i, j], i + j * Width),
-                                                                new PointIndex(result.Verts[i, j + 1], current_x + (j - 1) * Width),
-                                                                new PointIndex(result.Verts[i + 1, j], (current_x - 1) + (j - 1) * Width));
+                                Triangle tempTri = new Triangle(new PointIndex(result.Verts[(i * Width) + j].Location, i + j * Width),
+                                                                new PointIndex(result.Verts[(i * Width) + j + 1].Location, current_x + (j - 1) * Width),
+                                                                new PointIndex(result.Verts[((i +1) * Width) + j].Location, (current_x - 1) + (j - 1) * Width));
                                 if (tempTri.IsValid(Spacing * 2))
                                 {
                                     if (tempTri.IsWithinShearTolerance(10f))
@@ -413,9 +419,9 @@ public class Map : MonoBehaviour, IChromosome
                                 {
                                     return;
                                 }
-                                tempTri = new Triangle(new PointIndex(result.Verts[i, j], i + j * Width),
-                                                       new PointIndex(result.Verts[i, j + 1], (current_x - 1) + (j - 1) * Width),
-                                                       new PointIndex(result.Verts[i + 1, j], (i - 1) + j * Width));
+                                tempTri = new Triangle(new PointIndex(result.Verts[(i * Width) + j].Location, i + j * Width),
+                                                       new PointIndex(result.Verts[(i * Width) + j + 1].Location, (current_x - 1) + (j - 1) * Width),
+                                                       new PointIndex(result.Verts[((i + 1) * Width) + j].Location, (i - 1) + j * Width));
                                 if (tempTri.IsValid(Spacing * 2))
                                 {
                                     if (tempTri.IsWithinShearTolerance(10f))
@@ -435,7 +441,7 @@ public class Map : MonoBehaviour, IChromosome
         
         int searchRange = 10;
         //for (int i = 0; i < potentialPeaks.Count; ++i)
-        Parallel.For(0, potentialPeaks.Count, (i) =>
+        /*Parallel.For(0, potentialPeaks.Count, (i) =>
         {
             Vector2 highestIndex = new Vector2();
             float highestPoint = 0;
@@ -443,25 +449,25 @@ public class Map : MonoBehaviour, IChromosome
             //for (int k = -searchRange; k < searchRange; ++k)
             {
                 //for (int l = -searchRange; l < searchRange; ++l)
-                Parallel.For(0, searchRange, (l) =>
+                /*Parallel.For(0, searchRange, (l) =>
                 {
                     if ((potentialPeaks[i].x + k < Width) && (potentialPeaks[i].x + k > 0) && (potentialPeaks[i].y + l < Width) && (potentialPeaks[i].y + l > 0))
                     {
-                        if (result.Verts[(int)potentialPeaks[i].x + k, (int)potentialPeaks[i].y + l].y > highestPoint)
+                        if (result.Verts[(int)potentialPeaks[i].x + k, (int)potentialPeaks[i].y + l].Location.y > highestPoint)
                         {
-                            highestPoint = result.Verts[(int)potentialPeaks[i].x + k, (int)potentialPeaks[i].y + l].y;
+                            highestPoint = result.Verts[(int)potentialPeaks[i].x + k, (int)potentialPeaks[i].y + l].Location.y;
                             highestIndex.x = (int)potentialPeaks[i].x + k;
                             highestIndex.y = (int)potentialPeaks[i].y + l;
                         }
                     }
-                });
+                });#2#
             });
             lock (settlementViableAreaLock)
             {
-                calculatedPeaks.Add(result.Verts[(int)highestIndex.x, (int)highestIndex.y]);
+                calculatedPeaks.Add(result.Verts[(int)highestIndex.x, (int)highestIndex.y].Location);
             }
-        });
-        calculatedPeaks.Sort((a, b) => a.y.CompareTo(b.y));
+        });#1#/*
+        calculatedPeaks.Sort((a, b) => a.y.CompareTo(b.y));#1#
         for (int i = calculatedPeaks.Count -1; i > 0; i--)
         {
             if (i - 1 > 0)
@@ -472,22 +478,22 @@ public class Map : MonoBehaviour, IChromosome
                 }
             }
         }
-        numberOfPeaks = calculatedPeaks.Count;
+        numberOfPeaks = calculatedPeaks.Count;*/
     }
 
     float GetHeight(float x, float z)
     {
-        int leftGeneSum = 0;
+        /*int leftGeneSum = 0;
         int rightGeneSum = 0;
         for (int i = 0; i < Genes.Count; ++i)
         {
             if (i < (Genes.Count / 2))
             {
-                leftGeneSum += Genes[i];
+                leftGeneSum += Genes[i].Value;
             }
             else
             {
-                rightGeneSum += Genes[i];
+                rightGeneSum += Genes[i].Value;
             }
         }
         float returnVal = waveLength * Mathf.PerlinNoise(xFreq * (x + leftGeneSum), zFreq * (z + rightGeneSum));
@@ -495,20 +501,21 @@ public class Map : MonoBehaviour, IChromosome
         {
             returnVal += (1 / Mathf.Pow(2, i)) * waveLength * Mathf.PerlinNoise(i * Mathf.Sin(xFreq) * (x - leftGeneSum), (i * Mathf.Sin(zFreq)) * (z - rightGeneSum));
         }
-        return returnVal;
+        return returnVal;*/
+        throw new Exception();
     }
 
     // Update is called once per frame
-    void Update()
+    /*void Update()
     {
-        CalculateFitness();
+        /*CalculateFitness();#1#
         fitValue = Fitness;
         //GenerateMesh();
-    }
+    }*/
 
     public void CalculateFitness()
     {
-        float temp = TotalVertices;
+        /*float temp = TotalVertices;
         temp /= 100;
         float tempM = MountainousVertices / 100;
         float tempG = GrasslandVertices / 100;
@@ -526,12 +533,13 @@ public class Map : MonoBehaviour, IChromosome
 
         // Requires work on flatness using AverageVertexHeight
         //Fitness = mountFitness + grassFitness + underwaterFitness;
-        Fitness = GAFunctions.Average(mountFitness, grassFitness, underwaterFitness, peakFitness);
+        Fitness = GAFunctions.Average(mountFitness, grassFitness, underwaterFitness, peakFitness);*/
     }
 
     public List<IChromosome> CrossOver(IChromosome partner)
     {
-        List<IChromosome> children = new List<IChromosome>();
+        throw new Exception();
+        /*List<IChromosome> children = new List<IChromosome>();
         List<GeneticData> child1 = new List<GeneticData>();
         List<GeneticData> child2 = new List<GeneticData>();
 
@@ -661,17 +669,19 @@ public class Map : MonoBehaviour, IChromosome
         children.Add(GetComponent<Map>());
         AssignData(child2);
         children.Add(GetComponent<Map>());
-        return children;
+        return children;*/
     }
 
     public List<IChromosome> Crossover<Map>(Map a)
     {
-        return new List<IChromosome>();
+        throw new Exception();
+        /*return new List<IChromosome>();*/
     } 
 
     public List<IChromosome> CrossOver(Map partner)
     {
-        List<IChromosome> children = new List<IChromosome>();
+        throw new Exception();
+        /*List<IChromosome> children = new List<IChromosome>();
         List<GeneticData> child1 = new List<GeneticData>();
         List<GeneticData> child2 = new List<GeneticData>();
 
@@ -800,7 +810,7 @@ public class Map : MonoBehaviour, IChromosome
         children.Add(GetComponent<Map>());
         AssignData(child2);
         children.Add(GetComponent<Map>());
-        return children;
+        return children;*/
     }
 
     public List<IChromosome> CrossOver(Settlement a) { return null; }
@@ -810,7 +820,8 @@ public class Map : MonoBehaviour, IChromosome
 
     public void Mutate(float mutationRate)
     {
-        if(UnityEngine.Random.Range(0, 1f) <= mutationRate)
+        throw new Exception();
+        /*if(UnityEngine.Random.Range(0, 1f) <= mutationRate)
         {
             GeneData[0].DataSet[0] = GAFunctions.FlipACoin();
         }
@@ -852,19 +863,19 @@ public class Map : MonoBehaviour, IChromosome
         if (UnityEngine.Random.Range(0, 1f) <= mutationRate)
         {
             GeneData[9].DataSet[0] = UnityEngine.Random.Range(0.65f, 0.95f);
-        }
+        }*/
     }
 
     
 
     public void SetWater()
     {
-        MapParameters.MP.Water.transform.position = new Vector3(transform.position.x - 76, waterHeight, transform.position.z - 76);
+        /*MapParameters.MP.Water.transform.position = new Vector3(transform.position.x - 76, waterHeight, transform.position.z - 76);*/
     }
 
     void OnDestroy()
     {
-        //settleViableArea.Clear();
+        /*//settleViableArea.Clear();
         if(settleViableArea != null)
             Array.Clear(settleViableArea, 0, settleViableArea.Length);
         settlementTris.Clear();
@@ -883,7 +894,7 @@ public class Map : MonoBehaviour, IChromosome
 
         if (ret != null)
             if(ret.name != "null")
-                ret.Clear();
+                ret.Clear();*/
     }
 
     public GameObject GetGameObject()
@@ -891,31 +902,76 @@ public class Map : MonoBehaviour, IChromosome
         return gameObject;
     }
 
-    public List<float> GetFitnessVariables()
+    /*public List<float> GetFitnessVariables()
     {
-        return new List<float>
+        
+        /*return new List<float>
         {
             MountainousVertices,
             UnderwaterVertices,
             GrasslandVertices, 
             numberOfPeaks
-        };
-    }
+        };#1#
+    }*/
 
     public List<float> GetExpectedFitnesses()
     {
-        return new List<float>
-        {
-            MapParameters.MP.Mountainous,
-            MapParameters.MP.Underwater,
-            MapParameters.MP.Grassland,
-            MapParameters.MP.TargetPeaks
-        };
+        throw new Exception();
     }
 
-    public void Initialise(string name)
+    public void Initialise(ExpressedMapData mapData, string name)
     {
-        Name = name;
+        TerrainMaterials = MaterialController.MC.Materials;
+        
+        ret = new Mesh();
+        ret.SetVertices(mapData.Verts.Select(x => x.Location).ToList());
+        //ret.SetUVs(1, mapData.Verts.Select(x => x.UVy).ToList());
+        ret.SetTriangles(mapData.Tris.ToArray(), 0);
+        ret.RecalculateNormals();
+        ret.RecalculateTangents();
+        ret.RecalculateBounds();
+        /*ret.uv = new Vector2[mapData.VertexCount]; /*mapData.Verts.Select(x => x.UV1).ToArray();#1#
+        ret.uv2 = new Vector2[mapData.VertexCount];/*mapData.Verts.Select(x => x.UV2).ToArray();#1#
+        ret.uv3 = new Vector2[mapData.VertexCount]; /*mapData.Verts.Select(x => x.UV3).ToArray();#1#
+        ret.uv4 = new Vector2[mapData.VertexCount];*/ /*mapData.Verts.Select(x => x.UV4).ToArray();*/
+        var uv1s = new List<Vector2>(mapData.VertexCount);
+        var uv2s = new List<Vector2>(mapData.VertexCount);
+        var uv3s = new List<Vector2>(mapData.VertexCount);
+        var uv4s = new List<Vector2>(mapData.VertexCount);
+
+        var width = 255;
+        var arrayLength = width * width;
+        for (var i = 0; i < arrayLength; i++)
+        {
+            uv1s.Add(new Vector2());
+            uv2s.Add(new Vector2());
+            uv3s.Add(new Vector2());
+            uv4s.Add(new Vector2());
+        }
+
+        foreach (var vert in mapData.Verts)
+        {
+            uv1s[(vert.XIndex * width) + vert.YIndex] = vert.UV1;
+            uv2s[(vert.XIndex * width) + vert.YIndex] = vert.UV2;
+            uv3s[(vert.XIndex * width) + vert.YIndex] = vert.UV3;
+            uv4s[(vert.XIndex * width) + vert.YIndex] = vert.UV4;
+        }
+
+        ret.uv = uv1s.ToArray();
+        ret.uv2 = uv2s.ToArray();
+        ret.uv3 = uv3s.ToArray();
+        ret.uv4 = uv4s.ToArray();
+
+        gameObject.name = name;
+        gameObject.GetComponent<MeshFilter>().mesh = ret;
+
+        gameObject.GetComponent<MeshRenderer>().material = TerrainMaterials[0];
+        
+        /*ret.SetUVs(0, mapData.Verts.Select(x => x.UV1).ToList());
+        ret.SetUVs(1, mapData.Verts.Select(x => x.UV2).ToList());
+        ret.SetUVs(2, mapData.Verts.Select(x => x.UV3).ToList());
+        ret.SetUVs(3, mapData.Verts.Select(x => x.UV4).ToList());*/
+        /*Name = name;*/
     }
 }
 

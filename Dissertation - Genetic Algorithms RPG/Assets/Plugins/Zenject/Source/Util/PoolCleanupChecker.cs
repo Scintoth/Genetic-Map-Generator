@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using ModestTree;
 
-namespace Zenject
+namespace Zenject.Source.Util
 {
     // If you want to ensure that all items are always returned to the pool, include the following
     // line in an installer on project context:
     // Container.BindInterfaces<PoolCleanupChecker>().To<PoolCleanupChecker>().AsSingle().CopyIntoAllSubContainers().NonLazy()
     public class PoolCleanupChecker : ILateDisposable
     {
-        readonly List<IMemoryPool> _poolFactories;
+        readonly List<IMemoryPool> _poolFactories = new List<IMemoryPool>();
 
         public PoolCleanupChecker(
             [Inject(Optional = true, Source = InjectSources.Local)]

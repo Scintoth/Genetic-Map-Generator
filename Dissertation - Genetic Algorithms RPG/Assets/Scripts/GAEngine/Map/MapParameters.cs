@@ -13,7 +13,7 @@ public class MapParameters : MonoBehaviour {
 
     public GameObject Water;
 
-    void Start()
+    void Awake()
     {
         MP = this;
     }

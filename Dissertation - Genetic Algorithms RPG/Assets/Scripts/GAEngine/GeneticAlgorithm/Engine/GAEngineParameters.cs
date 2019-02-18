@@ -1,9 +1,5 @@
-﻿using Assets.Scripts.GAEngine.GeneticAlgorithm.Selection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Assets.Scripts.GAEngine.GeneticAlgorithm.Engine;
+using GeneticAlgorithmEngine;
 using Zenject;
 
 namespace Assets.Scripts.GAEngine.GeneticAlgorithm
@@ -12,13 +8,11 @@ namespace Assets.Scripts.GAEngine.GeneticAlgorithm
     {
         public int MaxPopulation;
         public float FitnessThreshold;
-        public IChromosome InitialChromosome;
+        public IGeneInfo InitialChromosome;
         public bool UseElitism;
         public MethodOfSelection SelectionMethod;
         public float MutationRate;
         public DiContainer Container;
         public string NameOfObject;
     }
-
-    public enum MethodOfSelection { TwoFittest, FittestAndRandom, BestAndWorst, Stochastic}
 }

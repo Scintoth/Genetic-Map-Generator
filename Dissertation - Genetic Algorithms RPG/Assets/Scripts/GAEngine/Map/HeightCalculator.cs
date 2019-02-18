@@ -10,6 +10,11 @@ namespace Assets.Scripts.GAEngine.Map
 {
     class PerlinHeightCalculator : IHeightCalculator
     {
+        public PerlinHeightCalculator()
+        {
+            
+        }
+
         public float GetHeight(HeightCalculationParameters parameters)
         {
             int leftGeneSum = 0;
@@ -18,11 +23,11 @@ namespace Assets.Scripts.GAEngine.Map
             {
                 if (i < (parameters.Genes.Count / 2))
                 {
-                    leftGeneSum += parameters.Genes[i];
+                    leftGeneSum += parameters.Genes[i].Value;
                 }
                 else
                 {
-                    rightGeneSum += parameters.Genes[i];
+                    rightGeneSum += parameters.Genes[i].Value;
                 }
             }
             float returnVal = parameters.Wavelength * Mathf.PerlinNoise(parameters.XFrequency * (parameters.XLocation + leftGeneSum),
@@ -30,12 +35,9 @@ namespace Assets.Scripts.GAEngine.Map
             for (int i = 1; i < parameters.NumberOfOctaves; i++)
             {
                 returnVal += (1 / Mathf.Pow(2, i)) 
-                                * parameters.Wavelength 
-                                * Mathf.PerlinNoise(i * Mathf.Sin(parameters.XFrequency)
-                                * (parameters.XLocation - leftGeneSum)
+                                * parameters.Wavelength * Mathf.PerlinNoise(i * Mathf.Sin(parameters.XFrequency) * (parameters.XLocation - leftGeneSum)
                                 ,
-                                (i * Mathf.Sin(parameters.ZFrequency)) 
-                                * (parameters.ZLocation - rightGeneSum));
+                                (i * Mathf.Sin(parameters.ZFrequency)) * (parameters.ZLocation - rightGeneSum));
             }
             return returnVal;
         }

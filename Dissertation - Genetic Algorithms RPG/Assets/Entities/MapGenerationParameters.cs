@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GeneticAlgorithmEngine;
 
 namespace Assets.Entities
 {
@@ -17,7 +18,7 @@ namespace Assets.Entities
         public float Wavelength { get; set; }
         public float WaterLevel { get; set;}
         public float MountainLevel { get; set;}    
-        public List<int> Genes { get; set; }
+        public List<RandomInt> Genes { get; set; }
         public int NumberOfOctaves { get; set; }
         public float XFrequency { get; set; }
         public float ZFrequency { get; set; }

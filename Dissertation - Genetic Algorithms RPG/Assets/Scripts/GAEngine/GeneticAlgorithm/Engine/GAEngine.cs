@@ -9,14 +9,15 @@ using Assets.Scripts.GAEngine.GeneticAlgorithm.Selection;
 using Assets.Scripts.GAEngine.GeneticAlgorithm.Engine;
 using Assets.Scripts.GAEngine.GeneticAlgorithm.Chromosome;
 using System.Threading.Tasks;
+using GeneticAlgorithmEngine;
 
-public delegate List<IChromosome> SelectionMethod();
+/*public delegate List<IChromosome> SelectionMethod();
 
 public class GAEngine : MonoBehaviour, IGeneticAlgorithmEngine 
 {
     IFitnessCalculator _fitnessCalculator;
+    private IGeneExpressor _geneExpressor;
 
-    SelectionFactory _selectionFactory;
     MethodOfSelection _methodOfSelection;
     DiContainer _container;
 
@@ -28,15 +29,15 @@ public class GAEngine : MonoBehaviour, IGeneticAlgorithmEngine
     float FitnessThreshold;
     int Generation;
 
-    IChromosome Initial;
+    IGeneInfo Initial;
 
-    IChromosome AppliedObject;
-    List<IChromosome> bests = new List<IChromosome>();
-    IChromosome worst;
+    IGeneInfo AppliedObject;
+    List<IGeneInfo> bests = new List<IGeneInfo>();
+    IGeneInfo worst;
 
     // Created chromosomes
-    List<IChromosome> createdChromosome;
-    List<IChromosome> Population = new List<IChromosome>();
+    List<IGeneInfo> createdChromosome;
+    List<IGeneInfo> Population = new List<IGeneInfo>();
     List<GameObject> created = new List<GameObject>();
 
      List<IChromosome> SelectedPopulation;
@@ -46,21 +47,25 @@ public class GAEngine : MonoBehaviour, IGeneticAlgorithmEngine
     // Elitism
     bool UseElitism;
     List<IChromosome> elite = new List<IChromosome>();
-    
+
+    #region oldshit
+
+    /*
+
     public void Selection(MethodOfSelection method)
     {
-        var selectionMethod = _selectionFactory.Create(method);
+        var selectionMethod = SelectionFactory.Create(method);
 
         var SelectedPopulation = selectionMethod.Select(Population);
         //AppliedObject.GetComponent<Map>() = bests[0];
-    }
+    }#1#
 
-    // Selection Methods
+    /#1#/ Selection Methods
     // TwoFittest, Fittest, BestAndWorst
-    public List<IChromosome> TwoFittest()
+    public List<IGeneInfo> TwoFittest()
     {
         if (bests.Count > 0)
-            return bests[0].CrossOver(bests[1]);
+            return bests[0].Crossover(bests[1]);
         else
             return null;
     }
@@ -73,7 +78,7 @@ public class GAEngine : MonoBehaviour, IGeneticAlgorithmEngine
     public List<IChromosome> BestAndWorst()
     {
         return bests[0].CrossOver(worst);
-    }
+    }#1#/*
 
     public List<IChromosome> BreedingWheel()
     {
@@ -102,9 +107,9 @@ public class GAEngine : MonoBehaviour, IGeneticAlgorithmEngine
         }
 
         return pickedChromosomes[0].CrossOver(pickedChromosomes[1]);
-    }
+    }#1#
 
-    void CalculateFitness()
+    /*void CalculateFitness()
     {
         bests.Clear();
         float fitComparison = 0;
@@ -143,7 +148,8 @@ public class GAEngine : MonoBehaviour, IGeneticAlgorithmEngine
         }
 
         bests.Sort((x, y) => x.Fitness.CompareTo(y.Fitness));
-    }
+    }#1#
+/*
 
     void Generate(List<IChromosome> createdOffspring, float mutationRate)
     {
@@ -160,7 +166,7 @@ public class GAEngine : MonoBehaviour, IGeneticAlgorithmEngine
             Parallel.For(0, MaxPopulation - 1, (i) =>
             //for (int i = 0; i < MaxPopulation; ++i)
             {
-                var temp = Initial.GenerateGene(20); /*ChromosomeFactory.CF.GetGameObjectForName(Initial.Name);*/
+                var temp = Initial.GenerateGene(20); /*ChromosomeFactory.CF.GetGameObjectForName(Initial.Name);#2#
                 lock (populationLock)
                 {
                     created.Add(temp.GetGameObject());
@@ -186,12 +192,12 @@ public class GAEngine : MonoBehaviour, IGeneticAlgorithmEngine
     {
         for (int i = 0; i < MaxPopulation; ++i)
         {
-            var temp = Initial.GenerateGene(20); /*ChromosomeFactory.CF.GetGameObjectForName(Initial.Name)*/;
+            var temp = Initial.GenerateGene(20); /*ChromosomeFactory.CF.GetGameObjectForName(Initial.Name)#2#;
                 created.Add(temp.GetGameObject());
                 Population.Add(Initial.GenerateGene(10));
             yield return null;
         }
-    }
+    }#1#
 
     /*void Generate(List<Map> createdOffspring, float mutationRate)
     {
@@ -223,9 +229,9 @@ public class GAEngine : MonoBehaviour, IGeneticAlgorithmEngine
                 Population[i].Mutate(mutationRate);
             }
         }
-    }*/
+    }#1#
 
-    void Generate(List<Settlement> createdOffspring, float mutationRate)
+    /*void Generate(List<Settlement> createdOffspring, float mutationRate)
     {
         ClearPopulation();
 
@@ -253,7 +259,7 @@ public class GAEngine : MonoBehaviour, IGeneticAlgorithmEngine
                 Population[i].Mutate(mutationRate);
             }
         }
-    }
+    }#1#/*
 
     public void UpdateGA(SelectionMethod selMethod, float mutationRate)
     {
@@ -278,7 +284,7 @@ public class GAEngine : MonoBehaviour, IGeneticAlgorithmEngine
 
             Generation++;
         }
-    }
+    }#1#/*
 
     void CheckDone()
     {
@@ -295,10 +301,11 @@ public class GAEngine : MonoBehaviour, IGeneticAlgorithmEngine
             if (AppliedObject.tag == "Settlement")
             {
                 AppliedObject.GetComponent<Settlement>().AssignData(bests[0].GeneData);
-            }*/
+            }#2#
             //ClearMaps();
         }
-    }
+    }/*
+#2#
 
     void ClearPopulation()
     {
@@ -309,15 +316,15 @@ public class GAEngine : MonoBehaviour, IGeneticAlgorithmEngine
         created.Clear();
         Population.Clear();
 
-    }
+    }#1#
     
     // Use this for initialization
-    void Start()
+    /*void Start()
     {
 
     }
     
-    public void GAUpdate()
+    public void Update()
     {
         if (Initial != null)
         {
@@ -328,42 +335,43 @@ public class GAEngine : MonoBehaviour, IGeneticAlgorithmEngine
             print("Initial needs to be set for GA to run.");
         }
         //throw new System.NotImplementedException();
-    }
+    }#1#
 
-    void IGeneticAlgorithmEngine.GAUpdate()
-    {
-        if (!stopGenerator)
-        {
+    //void IGeneticAlgorithmEngine.Update()
+    //{
+    //    if (!stopGenerator)
+    //    {
 
-            //Selection(selMethod);
+    //        //Selection(selMethod);
 
-            Generate(createdChromosome, _mutationRate);
+    //        Generate(createdChromosome, _mutationRate);
 
-            CalculateFitness();
+    //        CalculateFitness();
 
-            ClearPopulation();
+    //        ClearPopulation();
 
-            CheckDone();
-            if (AppliedObject == null)
-            {
-                AppliedObject = bests[0];
-            }
-            AppliedObject.AssignData(bests[0].GeneData);
+    //        CheckDone();
+    //        if (AppliedObject == null)
+    //        {
+    //            AppliedObject = bests[0];
+    //        }
+    //        AppliedObject.AssignData(bests[0].GeneData);
 
-            /*if (AppliedObject.tag == "Map")
-            {
-                AppliedObject.AssignData(bests[0].GeneData);
-                AppliedObject.GetComponent<Map>().SetWater();
-                AppliedObject.gameObject.name = "Map";
-            }
-            if (AppliedObject.tag == "Settlement")
-            {
-                AppliedObject.GetComponent<Settlement>().AssignData(bests[0].GeneData);
-                AppliedObject.gameObject.name = "Settlement";
-            }*/
-            Generation++;
-        }
-    }
+    //        /*if (AppliedObject.tag == "Map")
+    //        {
+    //            AppliedObject.AssignData(bests[0].GeneData);
+    //            AppliedObject.GetComponent<Map>().SetWater();
+    //            AppliedObject.gameObject.name = "Map";
+    //        }
+    //        if (AppliedObject.tag == "Settlement")
+    //        {
+    //            AppliedObject.GetComponent<Settlement>().AssignData(bests[0].GeneData);
+    //            AppliedObject.gameObject.name = "Settlement";
+    //        }#1#
+    //        Generation++;
+    //    }
+    //}
+/*
 
     bool IGeneticAlgorithmEngine.StopGenerator()
     {
@@ -396,4 +404,55 @@ public class GAEngine : MonoBehaviour, IGeneticAlgorithmEngine
     {
         return AppliedObject.GetGameObject();
     }
-}
+
+    public void SetParameters(GAEngineParameters parameters, IFitnessCalculator fitnessCalculator, IGeneExpressor geneExpressor)
+    {
+        SetParameters(parameters, _fitnessCalculator);
+    }
+
+    IGeneInfo IGeneticAlgorithmEngine.Update()
+    {
+        if (Initial != null)
+        {
+            UpdateGA(TwoFittest, 0.01f);
+        }
+        else
+        {
+            print("Initial needs to be set for GA to run.");
+        }
+        return new GeneInfo();
+    }#1#
+
+    #endregion
+
+    public void SetParameters(GAEngineParameters parameters)
+    {
+        _methodOfSelection = parameters.SelectionMethod;
+        UseElitism = parameters.UseElitism;
+        Initial = parameters.InitialChromosome;
+        _container = parameters.Container;
+        _mutationRate = parameters.MutationRate;
+        FitnessThreshold = parameters.FitnessThreshold;
+        MaxPopulation = parameters.MaxPopulation;
+    }
+
+    public async Task<IGeneInfo> Update()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public bool StopGenerator()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Reset()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public GameObject GetGameObject()
+    {
+        throw new System.NotImplementedException();
+    }
+}*/

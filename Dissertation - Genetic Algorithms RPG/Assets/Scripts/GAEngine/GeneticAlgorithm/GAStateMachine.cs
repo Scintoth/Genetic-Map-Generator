@@ -4,11 +4,14 @@ using Assets.Scripts.GAEngine.GeneticAlgorithm;
 using Assets.Scripts.GAEngine.GeneticAlgorithm.Chromosome;
 using Assets.Scripts.GAEngine.GeneticAlgorithm.Engine;
 using Assets.Scripts.GAEngine.GeneticAlgorithm.Selection;
+using Assets.Scripts.GAEngine.Map;
 using Assets.Scripts.StateMachine;
+using GeneticAlgorithmEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
+using GeneticAlgorithmEngine = Assets.Scripts.GAEngine.GeneticAlgorithm.Engine.GeneticAlgorithmEngine;
 
 public class GAStateMachine : MonoBehaviour
 {
@@ -18,6 +21,7 @@ public class GAStateMachine : MonoBehaviour
 
     [Inject]
     IStateMachine SM;
+    [Inject]
     public IGeneticAlgorithmEngine MapEngine;
     public IGeneticAlgorithmEngine SettlementEngine;
     public CameraController CC;
@@ -31,7 +35,7 @@ public class GAStateMachine : MonoBehaviour
 
     State InitialiseMapEngine = new State("Instantiating Map Engine", new List<Action> { }, new List<Action> { }, new List<Action> { });
     State CreateMap = new State("Map Creation", new List<Action> {  }, new List<Action> { }, new List<Action> { });
-    State CreateSettlement = new State("Settlement Generation", new List<Action> { }, new List<Action> { }, new List<Action> { });
+    /*State CreateSettlement = new State("Settlement Generation", new List<Action> { }, new List<Action> { }, new List<Action> { });*/
     State ViewMap = new State("Viewing Map", new List<Action> { }, new List<Action> { }, new List<Action> { });
 
     Transition EnginesInstantiated = new Transition();
@@ -54,32 +58,40 @@ public class GAStateMachine : MonoBehaviour
 
     void Start()
     {
-        MapEngine = _container.GetContainer().InstantiateComponentOnNewGameObject<GAEngine>("MapEngine");
+        SM = _container.GetContainer().Resolve<IStateMachine>();
+        //MapEngine = _container.GetContainer().InstantiateComponentOnNewGameObject<GeneticAlgorithmEngine.GeneticAlgorithmEngine>("MapEngine");
+        
         //InitialiseMapGA();
         /*var testBaseMap = _container.GetContainer().InstantiateComponentOnNewGameObject<Map>("Test Map");
-        testBaseMap.Initialise("Map");
+        testBaseMap.Initialise("Map");*/
+
+        var initialMap = _container.GetContainer().Resolve<IGeneInfo>();// new MapGeneInfo(new MapGeneExpressor(new HeightMapGenerator(new PerlinHeightCalculator())));
+
+        initialMap.Initialise();
+
         var testParameters = new GAEngineParameters
         {
             Container = _container.GetContainer(),
             FitnessThreshold = 0.9f,
-            InitialChromosome = testBaseMap,
+            InitialChromosome = initialMap,
             MutationRate = 0.01f,
             UseElitism = false,
             MaxPopulation = 20,
             SelectionMethod = MethodOfSelection.FittestAndRandom
         };
-        MapEngine.SetParameters(testParameters, new MapFitnessCalculator()); // TODO: Implement this from the UI*/
-        SettlementEngine = _container.GetContainer().InstantiateComponentOnNewGameObject<GAEngine>("SettlementEngine");
+        MapEngine = _container.GetContainer().Resolve<IGeneticAlgorithmEngine>();
+        MapEngine.SetParameters(testParameters); // TODO: Implement this from the UI
+        //SettlementEngine = _container.GetContainer().InstantiateComponentOnNewGameObject<GAEngine>("SettlementEngine");
         //SettlementEngine.SetParameters(); // TODO: Implement this from the UI
         EnginesInitialisedCondition.A = IsMapGenInitialised;
-        MapCompleted.Initialise("Map has been made", CreateSettlement, new List<Action> { }, MapCompleteCondtion);
-        CreateMap.SetActions(new List<Action> { }, new List<Action> { InitialiseMapGA, MapEngine.GAUpdate }, new List<Action> { GetFinalMap });
+        MapCompleted.Initialise("Map has been made", /*CreateSettlement*/ViewMap, new List<Action> { }, MapCompleteCondtion);
+        CreateMap.SetActions(new List<Action> { }, new List<Action> { InitialiseMapGa, () => { MapEngine.Update(); } }, new List<Action> { GetFinalMap });
         CreateMap.transitions = new List<Transition> { MapCompleted };
         SettlementComplete.Initialise("Settlement has been created", ViewMap, new List<Action> { }, SettlementCompleteCondition);
-        CreateSettlement.transitions = new List<Transition> { SettlementComplete };
-        CreateSettlement.SetActions(new List<Action> { }, new List<Action> { InitialiseSettlementGA, SettlementEngine.GAUpdate }, new List<Action> { GetFinalSettle });
+        //CreateSettlement.transitions = new List<Transition> { SettlementComplete };
+        //CreateSettlement.SetActions(new List<Action> { }, new List<Action> { InitialiseSettlementGA, SettlementEngine.Update }, new List<Action> { GetFinalSettle });
         ViewMap.SetActions(new List<Action> { }, new List<Action> { CC.CameraControllerUpdate }, new List<Action> { });
-        SM.Initialise(CreateMap, false, new List<State> { CreateMap, CreateSettlement, ViewMap });
+        SM.Initialise(CreateMap, false, new List<State> { CreateMap, /*CreateSettlement,*/ ViewMap });
         CheckConditions();
     }
 	
@@ -95,28 +107,28 @@ public class GAStateMachine : MonoBehaviour
     void CheckConditions()
     {
         MapCompleteCondtion.A = MapEngine.StopGenerator;
-        SettlementCompleteCondition.A = SettlementEngine.StopGenerator;
+        //SettlementCompleteCondition.A = SettlementEngine.StopGenerator;
     }
 
-    void InitialiseMapGA()
+    void InitialiseMapGa()
     {
         if (!mapGenInitialised)
         {
             var baseMap = ChromosomeFactory.CF.GetGameObjectForName("Map");
-            baseMap.GetComponent<IChromosome>().Name = "Map";
             var container = SceneContext.Container;
             var mapEngineParameters = new GAEngineParameters
             {
                 Container = container,
                 FitnessThreshold = 0.9f, // TODO: This needs taking in from the UI
-                InitialChromosome = baseMap.GetComponent<IChromosome>(),
+                InitialChromosome = baseMap.GetComponent<IGeneInfo>(),
                 MaxPopulation = 20, //TODO: Get this from UI
                 MutationRate = 0.01f, //TODO: Get this from UI
                 SelectionMethod = MethodOfSelection.FittestAndRandom, // TODO: Get this from UI
-                UseElitism = false // TODO: Get from UI
+                UseElitism = false,  // TODO: Get from UI
+                NameOfObject = "Map"
             };
             MapEngine.Reset();
-            MapEngine.SetParameters(mapEngineParameters, new MapFitnessCalculator());
+            MapEngine.SetParameters(mapEngineParameters);
             mapGenInitialised = true;
         }
     }
@@ -144,11 +156,13 @@ public class GAStateMachine : MonoBehaviour
     void GetFinalMap()
     {
         FinalMap = MapEngine.GetGameObject();
-        FinalMap.GetComponent<MeshCollider>().sharedMesh = FinalMap.GetComponent<Map>().ret;
+        FinalMap.GetComponent<Map>().Initialise((ExpressedMapData)MapEngine.GetFittest(), "Map");
+        //FinalMap.GetComponent<MeshCollider>().sharedMesh = FinalMap.GetComponent<Map>().ret;
         FinalMap.gameObject.AddComponent<Rigidbody>();
         FinalMap.gameObject.GetComponent<Rigidbody>().useGravity = false;
         FinalMap.gameObject.GetComponent<Rigidbody>().isKinematic = true;
-        MapEngine.GetGameObject().GetComponent<Map>().SetWater();
+        FinalMap.gameObject.transform.Rotate(180, 0, 0);
+        //MapEngine.GetGameObject().GetComponent<Map>().SetWater();
     }
 
     void GetFinalSettle()

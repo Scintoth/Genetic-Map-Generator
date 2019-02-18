@@ -1,6 +1,7 @@
 ﻿
 using System.Collections;
 using System.Collections.Generic;
+using GeneticAlgorithmEngine;
 using UnityEngine;
 
 public class Settlement : MonoBehaviour, IChromosome
@@ -18,7 +19,7 @@ public class Settlement : MonoBehaviour, IChromosome
         set;
     }
 
-    public List<int> Genes
+    public List<RandomInt> Genes
     {
         get;
         set;

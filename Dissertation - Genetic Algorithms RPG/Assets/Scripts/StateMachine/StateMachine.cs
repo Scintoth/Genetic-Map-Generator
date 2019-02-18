@@ -94,10 +94,10 @@ public class StateMachine : IStateMachine
 public class State
 {
     public string name;
-    public List<Action> entryAction;
-    public List<Action> action;
-    public List<Action> exitAction;
-    public List<Transition> transitions;
+    public List<Action> entryAction = new List<Action>();
+    public List<Action> action = new List<Action>();
+    public List<Action> exitAction = new List<Action>();
+    public List<Transition> transitions = new List<Transition>();
 
     public State(string Name, List<Action> EntryActions, List<Action> RunTimeActions, List<Action> ExitActions)
     {
@@ -125,7 +125,7 @@ public class Transition
 {
     public string Name;
     State targetState;
-    List<Action> actions;
+    List<Action> actions = new List<Action>();
     public ICondition condition;
     public bool useForceTrue;
 
@@ -145,6 +145,15 @@ public class Transition
         }
     }
 
-    public List<Action> Action { get; set; }
-    public State TargetState { get; set; }
+    public List<Action> Action
+    {
+        get { return actions; }
+        set { actions = value; }
+    }
+
+    public State TargetState
+    {
+        get { return targetState;}
+        set { targetState = value; }
+    }
 }
