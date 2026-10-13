@@ -1,0 +1,25 @@
+<Project>
+  <PropertyGroup>
+    <!-- Keep bin/obj out of src/: Unity compiles every .cs file inside the Core package folder. -->
+    <UseArtifactsOutput>true</UseArtifactsOutput>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Deterministic>true</Deterministic>
+    <Authors>Scintoth</Authors>
+  </PropertyGroup>
+
+  <!-- Core is consumed by Unity as source, so it is held to Unity's compiler: netstandard2.1 + C# 9. -->
+  <PropertyGroup Condition="$(MSBuildProjectDirectory.Contains('src/Core'))">
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="!$(MSBuildProjectDirectory.Contains('src/Core'))">
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>12.0</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,7 @@
+{
+  "name": "GeneticMapGenerator.Domain",
+  "rootNamespace": "GeneticMapGenerator.Domain",
+  "references": [],
+  "noEngineReferences": true,
+  "autoReferenced": true
+}

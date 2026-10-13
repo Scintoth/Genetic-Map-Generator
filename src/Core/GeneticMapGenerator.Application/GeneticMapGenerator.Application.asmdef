@@ -1,0 +1,7 @@
+{
+  "name": "GeneticMapGenerator.Application",
+  "rootNamespace": "GeneticMapGenerator.Application",
+  "references": ["GeneticMapGenerator.Domain"],
+  "noEngineReferences": true,
+  "autoReferenced": true
+}
