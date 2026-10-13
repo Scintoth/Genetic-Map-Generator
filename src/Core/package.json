@@ -1,0 +1,8 @@
+{
+  "name": "com.scintoth.genetic-map-generator.core",
+  "version": "2.0.0",
+  "displayName": "Genetic Map Generator Core",
+  "description": "Engine-agnostic domain and application layers: genetic algorithm kernel, terrain and settlement evolution.",
+  "unity": "2022.3",
+  "author": { "name": "Scintoth" }
+}

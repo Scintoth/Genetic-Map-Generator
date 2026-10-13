@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>genmap</AssemblyName>
+    <RootNamespace>GeneticMapGenerator.Headless</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../Core/GeneticMapGenerator.Application/GeneticMapGenerator.Application.csproj" />
+  </ItemGroup>
+</Project>

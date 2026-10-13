@@ -1,0 +1,9 @@
+{
+  "name": "GeneticMapGenerator.Unity",
+  "rootNamespace": "GeneticMapGenerator.Unity",
+  "references": [
+    "GeneticMapGenerator.Domain",
+    "GeneticMapGenerator.Application"
+  ],
+  "autoReferenced": true
+}
